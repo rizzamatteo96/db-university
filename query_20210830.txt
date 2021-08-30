@@ -1,0 +1,67 @@
+
+Query con GROUP BY
+
+----- 1 -----
+SELECT COUNT(`id`) AS `numero_iscritti`, YEAR(`enrolment_date`) AS `anno_iscrizione`
+FROM `students`
+GROUP BY `anno_iscrizione`;
+
+
+----- 2 -----
+SELECT COUNT(`id`) AS `numero_insegnanti`, `office_address`
+FROM `teachers`
+GROUP BY `office_address`;
+
+
+----- 3 -----
+SELECT AVG(`vote`) AS `media_voti`, `exam_id`
+FROM `exam_student`
+GROUP BY `exam_id`;
+
+
+----- 4 -----
+SELECT COUNT(`id`) AS `numero_corsi`, `department_id` AS `numero_dipartimento`
+FROM `degrees`
+GROUP BY `numero_dipartimento`;
+
+
+
+Query con JOIN
+
+----- 1 -----
+SELECT `students`.`id`, `students`.`name`, `students`.`surname`, `students`.`date_of_birth`, `degrees`.`name` AS `corso`
+FROM `students`
+INNER JOIN `degrees`
+ON `students`.`degree_id` = `degrees`.`id`
+WHERE `degrees`.`name` = 'Corso di Laurea in Economia';
+
+
+----- 2 -----
+SELECT `degrees`.*, `departments`.`name` AS `department_name` 
+FROM `degrees`
+INNER JOIN `departments`
+ON `degrees`.`department_id` = `departments`.`id`
+WHERE `departments`.`name` = 'Dipartimento di Neuroscienze';
+
+
+----- 3 -----
+SELECT `courses`.* 
+FROM `teachers`
+JOIN `course_teacher`
+ON `course_teacher`.`teacher_id` = `teachers`.`id`
+JOIN `courses`
+ON `course_teacher`.`course_id` = `courses`.`id`
+WHERE `teachers`.`name` = 'Fulvio' AND `teachers`.`surname` = 'Amato'
+
+
+----- 4 BONUS -----
+SELECT `exams`.`course_id`, `courses`.`name` AS `exam_course_name`,`students`.`id` AS `id_student`, `students`.`name` AS `student_name`, `students`.`surname` AS `student_surname`, COUNT(*) AS `n_attempts`
+FROM `exam_student`
+JOIN `exams`
+ON `exam_student`.`exam_id` = `exams`.`id`
+JOIN `students`
+ON `exam_student`.`student_id` = `students`.`id`
+JOIN `courses`
+ON `exams`.`course_id` = `courses`.`id`
+GROUP BY `exams`.`course_id`, `students`.`id`
+HAVING MAX(`exam_student`.`vote`) > 18
